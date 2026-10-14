@@ -1,0 +1,7 @@
+{
+  "id": "shift-handoff-001",
+  "title": "Shift handoff",
+  "message": "Shift notes are ready. Acknowledge when you have received them; this does not mark the work complete.",
+  "ackMode": "any",
+  "expiresInSeconds": 900
+}

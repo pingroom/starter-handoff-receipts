@@ -1,0 +1,17 @@
+{
+  "name": "pingroom-starter-handoff-receipts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Send an operational handoff and resume tracking its acknowledgement receipt.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/start.js",
+    "connect": "node src/connect.js",
+    "find-id": "node src/find-id.js",
+    "demo": "node src/demo.js",
+    "test": "node --test"
+  },
+  "dependencies": { "@pingroom/sdk": "0.7.0" },
+  "license": "MIT"
+}

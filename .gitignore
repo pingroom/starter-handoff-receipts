@@ -1,0 +1,7 @@
+node_modules/
+.pingroom/
+.receipts/
+.env
+.env.*
+!.env.example
+.DS_Store

@@ -201,3 +201,10 @@ test('payload limits are validated before sending', async (t) => {
   assert.equal(calls.length, 0);
   assert.equal(validateHandoff({ ...sampleHandoff, message: '🕊'.repeat(120) }).message.length, 240);
 });
+
+test('title and message are trimmed, as the server trims what it stores', () => {
+  const handoff = validateHandoff({ ...sampleHandoff, title: ' Shift change ', message: 'Keys are in the box.\n' });
+  assert.equal(handoff.title, 'Shift change');
+  assert.equal(handoff.message, 'Keys are in the box.');
+  assert.throws(() => validateHandoff({ ...sampleHandoff, message: ' \n ' }), { code: 'invalid_handoff' });
+});

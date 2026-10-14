@@ -11,16 +11,20 @@ export class TrackerError extends Error {
 }
 
 export function validateHandoff(input) {
+  // The server trims whitespace from the ends of every string it stores, and
+  // the saved notification is compared with what was sent, so trim first.
+  const title = typeof input?.title === 'string' ? input.title.trim() : null;
+  const message = typeof input?.message === 'string' ? input.message.trim() : null;
   if (!input || typeof input !== 'object' || Array.isArray(input)
     || Object.keys(input).sort().join(',') !== 'ackMode,expiresInSeconds,id,message,title'
     || typeof input.id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$/.test(input.id)
-    || typeof input.title !== 'string' || !input.title.trim() || [...input.title].length > 40
-    || typeof input.message !== 'string' || !input.message.trim() || [...input.message].length > 120
+    || !title || [...title].length > 40
+    || !message || [...message].length > 120
     || !['any', 'all'].includes(input.ackMode)
     || !Number.isInteger(input.expiresInSeconds) || input.expiresInSeconds < 60 || input.expiresInSeconds > 86400) {
     throw new TrackerError('invalid_handoff', 'Expected id, title (1–40 chars), message (1–120 chars), ackMode (any/all), expiresInSeconds (60–86400).');
   }
-  return Object.freeze({ id: input.id, title: input.title, message: input.message, ackMode: input.ackMode, expiresInSeconds: input.expiresInSeconds });
+  return Object.freeze({ id: input.id, title, message, ackMode: input.ackMode, expiresInSeconds: input.expiresInSeconds });
 }
 
 function bounded(promise, signal) {

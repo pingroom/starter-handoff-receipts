@@ -10,11 +10,24 @@ export class TrackerError extends Error {
   constructor(code, message) { super(message); this.name = 'TrackerError'; this.code = code; }
 }
 
+// What Laravel's TrimStrings middleware (Str::trim) strips from both ends of every string the server stores.
+const serverTrimmable = /^[\s\0\u0085\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5\u180E\u200B-\u200F\u2060-\u2065\u206A-\u206F\u2800\u3164\uFFA0\u{1D159}\u{1D173}-\u{1D17A}\u{E0020}]$/u;
+
+/** Trim as the server does. JS trim() keeps ZWSP, LRM/RLM, the soft hyphen, and other invisible marks. */
+function serverTrim(value) {
+  const characters = [...value];
+  let start = 0;
+  let end = characters.length;
+  while (start < end && serverTrimmable.test(characters[start])) start += 1;
+  while (end > start && serverTrimmable.test(characters[end - 1])) end -= 1;
+  return characters.slice(start, end).join('');
+}
+
 export function validateHandoff(input) {
-  // The server trims whitespace from the ends of every string it stores, and
-  // the saved notification is compared with what was sent, so trim first.
-  const title = typeof input?.title === 'string' ? input.title.trim() : null;
-  const message = typeof input?.message === 'string' ? input.message.trim() : null;
+  // The server trims the ends of every string it stores, and the saved
+  // notification is compared with what was sent, so trim the same way first.
+  const title = typeof input?.title === 'string' ? serverTrim(input.title) : null;
+  const message = typeof input?.message === 'string' ? serverTrim(input.message) : null;
   if (!input || typeof input !== 'object' || Array.isArray(input)
     || Object.keys(input).sort().join(',') !== 'ackMode,expiresInSeconds,id,message,title'
     || typeof input.id !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,79}$/.test(input.id)

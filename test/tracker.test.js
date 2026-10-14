@@ -208,3 +208,16 @@ test('title and message are trimmed, as the server trims what it stores', () => 
   assert.equal(handoff.message, 'Keys are in the box.');
   assert.throws(() => validateHandoff({ ...sampleHandoff, message: ' \n ' }), { code: 'invalid_handoff' });
 });
+
+test('invisible marks the server trims are trimmed too, so the saved notification matches', async (t) => {
+  // RLM, ZWSP and the soft hyphen survive JS trim(), but Laravel's TrimStrings
+  // drops them, so the server stores the message without them.
+  for (const tail of ['\u200F', '\u200B', '\u00AD']) {
+    const { options, calls } = await setup(t, { onRead: (detail) => ({ ...detail, message: 'Keys are in the box.' }) });
+    const result = await trackHandoff({ ...options, handoff: { ...sampleHandoff, message: `Keys are in the box.${tail}` } });
+    assert.equal(result.outcome, 'acked', JSON.stringify(tail));
+    assert.equal(sends(calls)[0].body.message, 'Keys are in the box.');
+  }
+  assert.equal(validateHandoff({ ...sampleHandoff, title: '\u200BShift change\u00AD' }).title, 'Shift change');
+  assert.throws(() => validateHandoff({ ...sampleHandoff, message: '\u200B\u200F\u00AD' }), { code: 'invalid_handoff' });
+});

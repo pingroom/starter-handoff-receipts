@@ -2,7 +2,7 @@
 
 Send an operational handoff and keep a local record of its acknowledgement. Restart the script to continue watching the same notification. An acknowledgement means the recipient confirmed receipt; it does not approve an action or prove the work is complete.
 
-Requires Node.js 22+. Uses the official [`@pingroom/sdk`](https://github.com/pingroom/sdk), pinned to `0.7.0`.
+Requires Node.js 22+. Uses the official [`@pingroom/sdk`](https://github.com/pingroom/sdk), pinned to `0.7.1`.
 
 ## Try it offline
 

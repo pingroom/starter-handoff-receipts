@@ -12,6 +12,6 @@
     "demo": "node src/demo.js",
     "test": "node --test"
   },
-  "dependencies": { "@pingroom/sdk": "0.7.0" },
+  "dependencies": { "@pingroom/sdk": "0.7.1" },
   "license": "MIT"
 }
